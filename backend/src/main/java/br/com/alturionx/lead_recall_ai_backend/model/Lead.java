@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "tb_leads")
+@NoArgsConstructor
 public class Lead {
 
     @Id
