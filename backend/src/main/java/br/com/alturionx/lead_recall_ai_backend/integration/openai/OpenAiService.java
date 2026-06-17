@@ -1,96 +1,103 @@
 package br.com.alturionx.lead_recall_ai_backend.integration.openai;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OpenAiService {
 
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final String API_URL =
+            "https://api.groq.com/openai/v1/chat/completions";
+
+    // ⚠️ ideal: colocar em application.properties
+    private static final String API_KEY = "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";
+
     public LeadInsight analyze(String message) {
 
-        if (message == null || message.isBlank()) {
+        try {
+            // 🔥 sanitiza entrada (evita quebrar JSON)
+            String cleanMessage = message
+                    .replace("\n", " ")
+                    .replace("\r", " ")
+                    .trim();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // 🔥 HEADER CORRETO GROQ
+            headers.setBearerAuth(API_KEY);
+
+            Map<String, Object> body = Map.of(
+                    "model", "llama-3.1-8b-instant",
+                    "temperature", 0.2,
+                    "messages", List.of(
+                            Map.of(
+                                    "role", "system",
+                                    "content",
+                                    """
+                                    Você é um sistema de extração de leads.
+                                    Responda APENAS JSON válido no formato:
+                                    {
+                                      "intent": "BUY_CAR | UNKNOWN",
+                                      "vehicle": "string ou null",
+                                      "budget": number ou null,
+                                      "confidence": number 0-1
+                                    }
+                                    Não inclua texto fora do JSON.
+                                    """
+                            ),
+                            Map.of(
+                                    "role", "user",
+                                    "content", cleanMessage
+                            )
+                    )
+            );
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    API_URL,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+
+            // 🔥 parse seguro do JSON da Groq
+            JsonNode root = objectMapper.readTree(response.getBody());
+
+            String content = root
+                    .path("choices")
+                    .get(0)
+                    .path("message")
+                    .path("content")
+                    .asText();
+
+            // 🔥 remove possíveis ```json
+            content = content
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .trim();
+
+            return objectMapper.readValue(content, LeadInsight.class);
+
+        } catch (Exception e) {
+            System.out.println("IA ERROR: " + e.getMessage());
+
             return new LeadInsight(
                     "UNKNOWN",
                     null,
                     null,
-                    0.0
+                    0.5
             );
         }
-
-        String lower = message.toLowerCase();
-
-        // 🧠 SIMULAÇÃO INTELIGENTE (MVP RULE-BASED)
-        if (lower.contains("bmw")) {
-
-            return new LeadInsight(
-                    "BUY_CAR",
-                    "BMW M4",
-                    extractBudget(lower),
-                    0.95
-            );
-        }
-
-        if (lower.contains("corolla") || lower.contains("toyota")) {
-
-            return new LeadInsight(
-                    "BUY_CAR",
-                    "Toyota Corolla",
-                    extractBudget(lower),
-                    0.90
-            );
-        }
-
-        if (lower.contains("carro") || lower.contains("veículo") || lower.contains("veiculo")) {
-
-            return new LeadInsight(
-                    "BUY_CAR",
-                    null,
-                    extractBudget(lower),
-                    0.70
-            );
-        }
-
-        // ❌ fallback
-        return new LeadInsight(
-                "UNKNOWN",
-                null,
-                null,
-                0.5
-        );
-    }
-
-    /**
-     * 🧠 Extração simples de orçamento (MVP)
-     * Ex: "até 80 mil", "100k", "500000"
-     */
-    private Integer extractBudget(String message) {
-
-        try {
-            if (message.contains("mil")) {
-
-                String number = message.replaceAll("[^0-9]", "");
-                if (!number.isBlank()) {
-                    return Integer.parseInt(number) * 1000;
-                }
-            }
-
-            if (message.contains("k")) {
-
-                String number = message.replaceAll("[^0-9]", "");
-                if (!number.isBlank()) {
-                    return Integer.parseInt(number) * 1000;
-                }
-            }
-
-            // fallback: tenta pegar número puro
-            String number = message.replaceAll("[^0-9]", "");
-            if (!number.isBlank()) {
-                return Integer.parseInt(number);
-            }
-
-        } catch (Exception e) {
-            return null;
-        }
-
-        return null;
     }
 }
