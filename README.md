@@ -50,7 +50,10 @@ When a new vehicle enters stock, the system automatically:
   "budget": 80000,
   "confidence": 0.90
 }
-📊 Lead created in system
+´´´
+
+###📊 Lead created in system
+```json
 {
   "phone": "5511999999999",
   "intent": "BUY_CAR",
@@ -58,11 +61,13 @@ When a new vehicle enters stock, the system automatically:
   "budget": 80000,
   "score": 80
 }
-🚗 Example: Matching engine
+´´´
+
+##🚗 Example: Matching engine
 
 When a new vehicle arrives:
 
-🆕 Inventory update
+###🆕 Inventory update
 Toyota Corolla XEi 2022 - R$ 79.900
 🔍 System match result
 Match found:
@@ -70,6 +75,7 @@ Match found:
 - Interest: Toyota Corolla
 - Budget compatibility: YES
 - Score: 80
+
 🤖 Automated action
 📲 WhatsApp message sent:
 

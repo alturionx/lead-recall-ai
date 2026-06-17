@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import br.com.alturionx.lead_recall_ai_backend.event.EventBus;
 import br.com.alturionx.lead_recall_ai_backend.event.MessageEvent;
 import br.com.alturionx.lead_recall_ai_backend.integration.openai.LeadInsight;
+import br.com.alturionx.lead_recall_ai_backend.integration.openai.LeadPriorityEngine;
 import br.com.alturionx.lead_recall_ai_backend.integration.openai.OpenAiService;
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.service.MessageService;
@@ -16,13 +17,17 @@ public class EventOrchestrator {
     private final EventBus eventBus;
     private final MessageService messageService;
     private final OpenAiService openAiService;
+    private final LeadPriorityEngine leadPriorityEngine;
 
     public EventOrchestrator(EventBus eventBus,
-            MessageService messageService,
-            OpenAiService openAiService) {
+                             MessageService messageService,
+                             OpenAiService openAiService,
+                             LeadPriorityEngine leadPriorityEngine) {
+
         this.eventBus = eventBus;
         this.messageService = messageService;
         this.openAiService = openAiService;
+        this.leadPriorityEngine = leadPriorityEngine;
     }
 
     @PostConstruct
@@ -33,56 +38,50 @@ public class EventOrchestrator {
             if (event instanceof MessageEvent messageEvent) {
                 handle(messageEvent);
             }
-
         });
     }
 
     private void handle(MessageEvent event) {
 
-        // 🧠 1. IA analisa mensagem
+        // 💾 1. salva mensagem (SEM mexer no lead ainda)
+        messageService.processIncomingMessage(
+                event.userId(),
+                event.message()
+        );
+
+        // 🧠 2. IA analisa
         LeadInsight insight = openAiService.analyze(event.message());
 
         System.out.println("IA RESULT: " + insight);
 
-        // 💾 2. salva mensagem + lead
-        messageService.processIncomingMessage(
-                event.userId(),
-                event.message());
-
-        // 🧠 3. atualiza lead com inteligência (NOVO)
+        // 🔎 3. carrega lead existente
         Lead lead = messageService.findLeadByPhone(event.userId());
 
-        if (lead != null) {
+        if (lead == null) return;
 
-            lead.setIntent(insight.intent());
-            lead.setVehicleInterest(insight.vehicle());
-            lead.setBudget(insight.budget());
-            lead.setConfidence(insight.confidence());
+        // 🧠 4. aplica engine (REGRA CORRETA)
+        leadPriorityEngine.apply(lead, insight);
 
-            // score simples inicial (vamos evoluir depois)
-            int score = calculateScore(insight);
-            lead.setScore(score);
+        // 📊 5. score baseado em estado FINAL do lead
+        lead.setScore(calculateScore(lead));
 
-            messageService.saveLead(lead);
-        }
+        // 💾 6. salva APENAS UMA VEZ
+        messageService.saveLead(lead);
     }
 
-    private int calculateScore(LeadInsight insight) {
-
-        if (insight.intent() == null)
-            return 0;
+    private int calculateScore(Lead lead) {
 
         int score = 0;
 
-        if ("BUY_CAR".equals(insight.intent())) {
+        if ("BUY_CAR".equals(lead.getIntent())) {
             score += 60;
         }
 
-        if (insight.vehicle() != null) {
+        if (lead.getVehicleInterest() != null) {
             score += 20;
         }
 
-        if (insight.budget() != null && insight.budget() > 100000) {
+        if (lead.getBudget() != null && lead.getBudget() > 100000) {
             score += 20;
         }
 
