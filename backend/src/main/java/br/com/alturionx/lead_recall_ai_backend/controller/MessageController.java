@@ -2,17 +2,16 @@ package br.com.alturionx.lead_recall_ai_backend.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import br.com.alturionx.lead_recall_ai_backend.model.Message;
-import br.com.alturionx.lead_recall_ai_backend.service.MessageService;
+import br.com.alturionx.lead_recall_ai_backend.adapter.MessageEventAdapter;
 
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
 
-    private final MessageService messageService;
+    private final MessageEventAdapter messageEventAdapter;
 
-    public MessageController(MessageService messageService) {
-        this.messageService = messageService;
+    public MessageController(MessageEventAdapter messageEventAdapter) {
+        this.messageEventAdapter = messageEventAdapter;
     }
 
     public record IncomingMessageRequest(
@@ -21,11 +20,12 @@ public class MessageController {
     ) {}
 
     @PostMapping
-    public Message receive(@RequestBody IncomingMessageRequest request) {
+    public void receive(@RequestBody IncomingMessageRequest request) {
 
-        return messageService.processIncomingMessage(
+        messageEventAdapter.toEvent(
                 request.phone(),
-                request.content()
+                request.content(),
+                "whatsapp"
         );
     }
 }
