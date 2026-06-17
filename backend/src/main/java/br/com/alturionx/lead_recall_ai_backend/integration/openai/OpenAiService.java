@@ -15,11 +15,10 @@ public class OpenAiService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String API_URL =
-            "https://api.groq.com/openai/v1/chat/completions";
+    private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     // ⚠️ ideal: colocar em application.properties
-    private static final String API_KEY = "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";
+    private final String API_KEY = System.getenv("GROQ_API_KEY");
 
     public LeadInsight analyze(String message) {
 
@@ -44,23 +43,19 @@ public class OpenAiService {
                                     "role", "system",
                                     "content",
                                     """
-                                    Você é um sistema de extração de leads.
-                                    Responda APENAS JSON válido no formato:
-                                    {
-                                      "intent": "BUY_CAR | UNKNOWN",
-                                      "vehicle": "string ou null",
-                                      "budget": number ou null,
-                                      "confidence": number 0-1
-                                    }
-                                    Não inclua texto fora do JSON.
-                                    """
-                            ),
+                                            Você é um sistema de extração de leads.
+                                            Responda APENAS JSON válido no formato:
+                                            {
+                                              "intent": "BUY_CAR | UNKNOWN",
+                                              "vehicle": "string ou null",
+                                              "budget": number ou null,
+                                              "confidence": number 0-1
+                                            }
+                                            Não inclua texto fora do JSON.
+                                            """),
                             Map.of(
                                     "role", "user",
-                                    "content", cleanMessage
-                            )
-                    )
-            );
+                                    "content", cleanMessage)));
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
@@ -68,8 +63,7 @@ public class OpenAiService {
                     API_URL,
                     HttpMethod.POST,
                     request,
-                    String.class
-            );
+                    String.class);
 
             // 🔥 parse seguro do JSON da Groq
             JsonNode root = objectMapper.readTree(response.getBody());
@@ -96,8 +90,7 @@ public class OpenAiService {
                     "UNKNOWN",
                     null,
                     null,
-                    0.5
-            );
+                    0.5);
         }
     }
 }
