@@ -15,21 +15,28 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final LeadRepository leadRepository;
 
-    public MessageService(MessageRepository messageRepository,
-                          LeadRepository leadRepository) {
+    public MessageService(
+            MessageRepository messageRepository,
+            LeadRepository leadRepository) {
+
         this.messageRepository = messageRepository;
         this.leadRepository = leadRepository;
     }
 
     /**
      * 📩 Responsabilidade:
-     * - Garantir Lead existe (SEM salvar novo vazio)
+     * - Garantir que o Lead exista
      * - Salvar Message vinculada ao Lead
      */
     public Message processIncomingMessage(String phone, String content) {
 
         Lead lead = leadRepository.findByPhone(phone)
-                .orElseGet(() -> createTransientLead(phone));
+                .orElseGet(() -> {
+                    Lead newLead = new Lead();
+                    newLead.setPhone(phone);
+
+                    return leadRepository.save(newLead);
+                });
 
         Message message = new Message();
         message.setContent(content);
@@ -41,16 +48,6 @@ public class MessageService {
     }
 
     /**
-     * ⚠️ IMPORTANTE:
-     * NÃO salva no banco aqui
-     */
-    private Lead createTransientLead(String phone) {
-        Lead lead = new Lead();
-        lead.setPhone(phone);
-        return lead;
-    }
-
-    /**
      * 🔎 Busca lead existente
      */
     public Lead findLeadByPhone(String phone) {
@@ -58,7 +55,7 @@ public class MessageService {
     }
 
     /**
-     * 💾 ÚNICO ponto correto de persistência
+     * 💾 Salva alterações do lead
      */
     public Lead saveLead(Lead lead) {
         return leadRepository.save(lead);
