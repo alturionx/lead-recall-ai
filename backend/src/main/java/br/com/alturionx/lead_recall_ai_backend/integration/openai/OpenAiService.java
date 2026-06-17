@@ -12,85 +12,85 @@ import java.util.Map;
 @Service
 public class OpenAiService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+        private final RestTemplate restTemplate = new RestTemplate();
+        private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
+        private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-    // ⚠️ ideal: colocar em application.properties
-    private final String API_KEY = System.getenv("GROQ_API_KEY");
+        // ⚠️ ideal: colocar em application.properties
+        private static final String API_KEY = "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";
 
-    public LeadInsight analyze(String message) {
+        public LeadInsight analyze(String message) {
 
-        try {
-            // 🔥 sanitiza entrada (evita quebrar JSON)
-            String cleanMessage = message
-                    .replace("\n", " ")
-                    .replace("\r", " ")
-                    .trim();
+                try {
+                        // 🔥 sanitiza entrada (evita quebrar JSON)
+                        String cleanMessage = message
+                                        .replace("\n", " ")
+                                        .replace("\r", " ")
+                                        .trim();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // 🔥 HEADER CORRETO GROQ
-            headers.setBearerAuth(API_KEY);
+                        // 🔥 HEADER CORRETO GROQ
+                        headers.setBearerAuth(API_KEY);
 
-            Map<String, Object> body = Map.of(
-                    "model", "llama-3.1-8b-instant",
-                    "temperature", 0.2,
-                    "messages", List.of(
-                            Map.of(
-                                    "role", "system",
-                                    "content",
-                                    """
-                                            Você é um sistema de extração de leads.
-                                            Responda APENAS JSON válido no formato:
-                                            {
-                                              "intent": "BUY_CAR | UNKNOWN",
-                                              "vehicle": "string ou null",
-                                              "budget": number ou null,
-                                              "confidence": number 0-1
-                                            }
-                                            Não inclua texto fora do JSON.
-                                            """),
-                            Map.of(
-                                    "role", "user",
-                                    "content", cleanMessage)));
+                        Map<String, Object> body = Map.of(
+                                        "model", "llama-3.1-8b-instant",
+                                        "temperature", 0.2,
+                                        "messages", List.of(
+                                                        Map.of(
+                                                                        "role", "system",
+                                                                        "content",
+                                                                        """
+                                                                                        Você é um sistema de extração de leads.
+                                                                                        Responda APENAS JSON válido no formato:
+                                                                                        {
+                                                                                          "intent": "BUY_CAR | UNKNOWN",
+                                                                                          "vehicle": "string ou null",
+                                                                                          "budget": number ou null,
+                                                                                          "confidence": number 0-1
+                                                                                        }
+                                                                                        Não inclua texto fora do JSON.
+                                                                                        """),
+                                                        Map.of(
+                                                                        "role", "user",
+                                                                        "content", cleanMessage)));
 
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+                        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(
-                    API_URL,
-                    HttpMethod.POST,
-                    request,
-                    String.class);
+                        ResponseEntity<String> response = restTemplate.exchange(
+                                        API_URL,
+                                        HttpMethod.POST,
+                                        request,
+                                        String.class);
 
-            // 🔥 parse seguro do JSON da Groq
-            JsonNode root = objectMapper.readTree(response.getBody());
+                        // 🔥 parse seguro do JSON da Groq
+                        JsonNode root = objectMapper.readTree(response.getBody());
 
-            String content = root
-                    .path("choices")
-                    .get(0)
-                    .path("message")
-                    .path("content")
-                    .asText();
+                        String content = root
+                                        .path("choices")
+                                        .get(0)
+                                        .path("message")
+                                        .path("content")
+                                        .asText();
 
-            // 🔥 remove possíveis ```json
-            content = content
-                    .replace("```json", "")
-                    .replace("```", "")
-                    .trim();
+                        // 🔥 remove possíveis ```json
+                        content = content
+                                        .replace("```json", "")
+                                        .replace("```", "")
+                                        .trim();
 
-            return objectMapper.readValue(content, LeadInsight.class);
+                        return objectMapper.readValue(content, LeadInsight.class);
 
-        } catch (Exception e) {
-            System.out.println("IA ERROR: " + e.getMessage());
+                } catch (Exception e) {
+                        System.out.println("IA ERROR: " + e.getMessage());
 
-            return new LeadInsight(
-                    "UNKNOWN",
-                    null,
-                    null,
-                    0.5);
+                        return new LeadInsight(
+                                        "UNKNOWN",
+                                        null,
+                                        null,
+                                        0.5);
+                }
         }
-    }
 }
