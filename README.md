@@ -50,9 +50,9 @@ When a new vehicle enters stock, the system automatically:
   "budget": 80000,
   "confidence": 0.90
 }
-´´´
+```
 
-###📊 Lead created in system
+### 📊 Lead created in system
 ```json
 {
   "phone": "5511999999999",
@@ -61,27 +61,29 @@ When a new vehicle enters stock, the system automatically:
   "budget": 80000,
   "score": 80
 }
-´´´
+```
 
-##🚗 Example: Matching engine
+## 🚗 Example: Matching engine
 
 When a new vehicle arrives:
 
-###🆕 Inventory update
+### 🆕 Inventory update
 Toyota Corolla XEi 2022 - R$ 79.900
-🔍 System match result
+
+### 🔍 System match result
 Match found:
 - Lead: 5511999999999
 - Interest: Toyota Corolla
 - Budget compatibility: YES
 - Score: 80
 
-🤖 Automated action
+### 🤖 Automated action
 📲 WhatsApp message sent:
 
 "Olá! Temos um Toyota Corolla XEi 2022 disponível por R$ 79.900.
 Ainda tem interesse?"
-🏗️ Architecture Overview
+
+# 🏗️ Architecture Overview
 
 Lead Recall AI is built on a scalable event-driven architecture designed for real-time processing and extensibility.
 
@@ -106,22 +108,23 @@ Provides insights into leads, opportunities, and conversion performance
 
 Transform historical and real-time customer conversations into high-value sales opportunities, automatically reconnecting interested buyers with newly available inventory.
 
-⚡ Vision
+# ⚡Vision
 
 Turn every conversation into a potential sale — even months after it happened.
 
-🧠 Lead Recall AI
+# 🧠 Lead Recall AI
 
 “Every lead remembered. Every opportunity recovered.”
 
-📌 Tech highlights
+# 📌 Tech highlights
 Java 21 + Spring Boot
 Spring Data JPA
 MySQL
 Event-driven architecture
 REST + Messaging integration
 AI-powered lead extraction (Groq / OpenAI compatible)
-🔥 Why it matters
+
+# 🔥 Why it matters
 
 Most leads are lost not because they said “no”…
 but because no system remembered them.
