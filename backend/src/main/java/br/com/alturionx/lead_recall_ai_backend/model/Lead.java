@@ -23,6 +23,15 @@ public class Lead {
 
     private Integer score = 0;
 
+    // 🧠 NOVOS CAMPOS (IA)
+    private String vehicleInterest;
+
+    private Integer budget;
+
+    private String intent;
+
+    private Double confidence;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

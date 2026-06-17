@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.model.Message;
+import br.com.alturionx.lead_recall_ai_backend.repository.LeadRepository;
 import br.com.alturionx.lead_recall_ai_backend.repository.MessageRepository;
 
 import java.time.LocalDateTime;
@@ -12,17 +13,27 @@ import java.time.LocalDateTime;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final LeadService leadService;
+    private final LeadRepository leadRepository;
 
     public MessageService(MessageRepository messageRepository,
-                          LeadService leadService) {
+                          LeadRepository leadRepository) {
         this.messageRepository = messageRepository;
-        this.leadService = leadService;
+        this.leadRepository = leadRepository;
     }
 
+    /**
+     * 📩 Responsabilidade:
+     * - Garantir Lead existe
+     * - Salvar Message vinculada ao Lead
+     */
     public Message processIncomingMessage(String phone, String content) {
 
-        Lead lead = leadService.findOrCreateLead(phone);
+        Lead lead = leadRepository.findByPhone(phone)
+                .orElseGet(() -> {
+                    Lead newLead = new Lead();
+                    newLead.setPhone(phone);
+                    return leadRepository.save(newLead);
+                });
 
         Message message = new Message();
         message.setContent(content);
@@ -31,5 +42,19 @@ public class MessageService {
         message.setLead(lead);
 
         return messageRepository.save(message);
+    }
+
+    /**
+     * 🔎 Busca lead existente
+     */
+    public Lead findLeadByPhone(String phone) {
+        return leadRepository.findByPhone(phone).orElse(null);
+    }
+
+    /**
+     * 💾 Atualiza ou salva lead enriquecido pela IA
+     */
+    public Lead saveLead(Lead lead) {
+        return leadRepository.save(lead);
     }
 }
