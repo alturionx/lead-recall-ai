@@ -33,50 +33,93 @@ When a new vehicle enters stock, the system automatically:
 
 ---
 
-## 🏗️ Architecture Overview
+## 🧪 Example: AI in action
+
+### 📩 Incoming message
+
+
+"Quero um Corolla usado até 80 mil"
+
+
+### 🧠 AI extraction result
+
+```json
+{
+  "intent": "BUY_CAR",
+  "vehicle": "Toyota Corolla",
+  "budget": 80000,
+  "confidence": 0.90
+}
+📊 Lead created in system
+{
+  "phone": "5511999999999",
+  "intent": "BUY_CAR",
+  "vehicleInterest": "Toyota Corolla",
+  "budget": 80000,
+  "score": 80
+}
+🚗 Example: Matching engine
+
+When a new vehicle arrives:
+
+🆕 Inventory update
+Toyota Corolla XEi 2022 - R$ 79.900
+🔍 System match result
+Match found:
+- Lead: 5511999999999
+- Interest: Toyota Corolla
+- Budget compatibility: YES
+- Score: 80
+🤖 Automated action
+📲 WhatsApp message sent:
+
+"Olá! Temos um Toyota Corolla XEi 2022 disponível por R$ 79.900.
+Ainda tem interesse?"
+🏗️ Architecture Overview
 
 Lead Recall AI is built on a scalable event-driven architecture designed for real-time processing and extensibility.
 
-### Core Components
-
-- 📩 **Messaging Providers**  
-  Handles incoming messages from external channels (WhatsApp, Instagram, Web Chat)
-
-- 🔌 **Adapter Layer**  
-  Normalizes different messaging formats into a unified event structure
-
-- ⚙️ **Event Processing Core**  
-  Orchestrates system events and business workflows
-
-- 🧠 **AI Intelligence Module**  
-  Extracts intent, sentiment, and purchase signals from conversations
-
-- 🚗 **Inventory Engine**  
-  Tracks stock updates and normalizes product data
-
-- 🔍 **Matching Engine**  
-  Connects leads with relevant inventory based on behavior and intent
-
-- 🤖 **Automation Layer**  
-  Executes actions such as notifications, CRM updates, and follow-ups
-
-- 📊 **Dashboard & Analytics**  
-  Provides insights into leads, opportunities, and conversion performance
-
----
-
-## 🎯 Goal
+Core Components
+📩 Messaging Providers
+Handles incoming messages from external channels (WhatsApp, Instagram, Web Chat)
+🔌 Adapter Layer
+Normalizes different messaging formats into a unified event structure
+⚙️ Event Processing Core
+Orchestrates system events and business workflows
+🧠 AI Intelligence Module
+Extracts intent, sentiment, and purchase signals from conversations
+🚗 Inventory Engine
+Tracks stock updates and normalizes product data
+🔍 Matching Engine
+Connects leads with relevant inventory based on behavior and intent
+🤖 Automation Layer
+Executes actions such as notifications, CRM updates, and follow-ups
+📊 Dashboard & Analytics
+Provides insights into leads, opportunities, and conversion performance
+🎯 Goal
 
 Transform historical and real-time customer conversations into high-value sales opportunities, automatically reconnecting interested buyers with newly available inventory.
 
----
+⚡ Vision
 
-## ⚡ Vision
+Turn every conversation into a potential sale — even months after it happened.
 
-> Turn every conversation into a potential sale — even months after it happened.
+🧠 Lead Recall AI
 
----
+“Every lead remembered. Every opportunity recovered.”
 
-## 🧠 Lead Recall AI
+📌 Tech highlights
+Java 21 + Spring Boot
+Spring Data JPA
+MySQL
+Event-driven architecture
+REST + Messaging integration
+AI-powered lead extraction (Groq / OpenAI compatible)
+🔥 Why it matters
 
-**“Every lead remembered. Every opportunity recovered.”**
+Most leads are lost not because they said “no”…
+but because no system remembered them.
+
+Lead Recall AI fixes that.
+
+It turns forgotten conversations into active revenue opportunities.
