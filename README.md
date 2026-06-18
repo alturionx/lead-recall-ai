@@ -29,6 +29,9 @@ Quando novos veículos entram no estoque, o sistema:
 - 📊 Calcula score do lead e da oportunidade  
 - 🤖 Aciona fluxo de automação comercial  
 
+
+## 🏗️ Fluxo 1 - Cliente Demonstra Interesse
+
 ```mermaid
 flowchart TD
 
@@ -55,6 +58,8 @@ H --> I[🎯 Lead Registrado]
 
 I --> J[⏳ Aguardando Veículo Compatível]
 ```
+
+## 🏗️ Fluxo 2 - Entrada de Veículo no Estoque
 
 ```mermaid
 flowchart TD
