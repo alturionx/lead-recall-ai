@@ -1,5 +1,7 @@
 package br.com.alturionx.lead_recall_ai_backend.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
@@ -12,6 +14,10 @@ public class LeadService {
 
     public LeadService(LeadRepository leadRepository) {
         this.leadRepository = leadRepository;
+    }
+
+    public List<Lead> findAll(){
+        return leadRepository.findAll();
     }
 
     /**
