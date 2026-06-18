@@ -40,22 +40,22 @@ export default function Sidebar({
                 {
                     name: "Leads",
                     icon: Users,
-                    path: "/admin/leads",
+                    path: "/",
                 },
                 {
                     name: "Conversas",
                     icon: MessageSquare,
-                    path: "/admin/conversas",
+                    path: "/",
                 },
                 {
                     name: "Insights",
                     icon: Brain,
-                    path: "/admin/insights",
+                    path: "/",
                 },
                 {
                     name: "Importações",
                     icon: Upload,
-                    path: "/admin/importacoes",
+                    path: "/",
                 },
             ],
         },
@@ -66,17 +66,17 @@ export default function Sidebar({
                 {
                     name: "Fluxos",
                     icon: Workflow,
-                    path: "/admin/fluxos",
+                    path: "/",
                 },
                 {
                     name: "Respostas IA",
                     icon: Bot,
-                    path: "/admin/ia",
+                    path: "/",
                 },
                 {
                     name: "Agendamentos",
                     icon: Calendar,
-                    path: "/admin/agendamentos",
+                    path: "/",
                 },
             ],
         },
@@ -87,17 +87,17 @@ export default function Sidebar({
                 {
                     name: "Performance",
                     icon: BarChart3,
-                    path: "/admin/performance",
+                    path: "/",
                 },
                 {
                     name: "Conversões",
                     icon: TrendingUp,
-                    path: "/admin/conversoes",
+                    path: "/",
                 },
                 {
                     name: "Atividades",
                     icon: Activity,
-                    path: "/admin/atividades",
+                    path: "/",
                 },
             ],
         },
@@ -108,7 +108,7 @@ export default function Sidebar({
                 {
                     name: "Integrações",
                     icon: Plug,
-                    path: "/admin/integracoes",
+                    path: "/",
                 },
                 {
                     name: "Configurações",
@@ -165,7 +165,7 @@ export default function Sidebar({
                                 className="
                                 w-12 h-12
                                 rounded-2xl
-                                bg-gradient-to-br
+                                bg-linear-to-br
                                 from-green-400
                                 to-green-700
                                 flex items-center justify-center
@@ -352,7 +352,7 @@ export default function Sidebar({
                                 className="
                                 w-12 h-12
                                 rounded-xl
-                                bg-gradient-to-br
+                                bg-linear-to-br
                                 from-green-500
                                 to-green-700
                                 flex items-center justify-center

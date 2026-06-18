@@ -53,7 +53,7 @@ export default function Dashboard() {
 
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-4">
                                 <h2 className="text-3xl sm:text-4xl xl:text-5xl font-semibold text-white">
-                                    0
+                                    {leads.length}
                                 </h2>
 
                                 <span className="text-green-400 text-lg">
