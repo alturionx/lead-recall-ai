@@ -29,6 +29,67 @@ Quando novos veículos entram no estoque, o sistema:
 - 📊 Calcula score do lead e da oportunidade  
 - 🤖 Aciona fluxo de automação comercial  
 
+```mermaid
+flowchart TD
+
+A[👤 Cliente] --> B[💬 Mensagem Recebida]
+
+B --> C[🧠 AI Extraction Service]
+
+C --> D["Extrai:
+• Intent
+• Veículo
+• Orçamento
+• Confiança"]
+
+D --> E[👥 Lead Service]
+
+E --> F[(💾 MySQL)]
+
+E --> G["📢 Evento:
+lead_created"]
+
+G --> H[⚡ EventBus]
+
+H --> I[🎯 Lead Registrado]
+
+I --> J[⏳ Aguardando Veículo Compatível]
+```
+
+```mermaid
+flowchart TD
+
+A[🚗 Novo Veículo]
+
+A --> B[🚗 Vehicle Service]
+
+B --> C[(💾 MySQL)]
+
+B --> D["📢 Evento:
+vehicle_created"]
+
+D --> E[⚡ EventBus]
+
+E --> F[🔍 LeadVehicleMatcher]
+
+F --> G{Match Encontrado?}
+
+G -->|Não| H[⏹ Encerrar Processo]
+
+G -->|Sim| I["Compara:
+• Modelo
+• Interesse
+• Orçamento"]
+
+I --> J[🎯 Opportunity Service]
+
+J --> K[💼 Opportunity Criada]
+
+K --> L[(💾 MySQL)]
+
+L --> M[✅ Oportunidade Disponível]
+```
+
 ---
 
 ## ⚙️ Funcionalidades principais
