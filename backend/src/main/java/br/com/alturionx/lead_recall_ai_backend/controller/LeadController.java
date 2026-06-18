@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.alturionx.lead_recall_ai_backend.dto.CreateLeadRequest;
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.service.LeadService;
 
@@ -20,18 +19,19 @@ public class LeadController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Lead>> findAll(){
-        List<Lead> leads = leadService.findAll();
-        return ResponseEntity.ok().body(leads);
-    }
-
-    @PostMapping
-    public Lead create(@RequestBody CreateLeadRequest request) {
-        return leadService.findOrCreateLead(request.phone());
+    public ResponseEntity<List<Lead>> findAll() {
+        return ResponseEntity.ok(leadService.findAll());
     }
 
     @GetMapping("/{phone}")
-    public Lead getOrCreate(@PathVariable String phone) {
-        return leadService.findOrCreateLead(phone);
+    public ResponseEntity<Lead> getByPhone(@PathVariable String phone) {
+
+        Lead lead = leadService.findByPhone(phone);
+
+        if (lead == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(lead);
     }
 }

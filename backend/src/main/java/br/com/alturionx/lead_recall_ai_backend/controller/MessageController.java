@@ -2,30 +2,31 @@ package br.com.alturionx.lead_recall_ai_backend.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import br.com.alturionx.lead_recall_ai_backend.adapter.MessageEventAdapter;
+import br.com.alturionx.lead_recall_ai_backend.event.EventBus;
+import br.com.alturionx.lead_recall_ai_backend.event.MessageEvent;
 
 @RestController
 @RequestMapping("/messages")
 public class MessageController {
 
-    private final MessageEventAdapter messageEventAdapter;
+    private final EventBus eventBus;
 
-    public MessageController(MessageEventAdapter messageEventAdapter) {
-        this.messageEventAdapter = messageEventAdapter;
+    public MessageController(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     public record IncomingMessageRequest(
             String phone,
-            String content
-    ) {}
+            String content) {
+    }
 
     @PostMapping
     public void receive(@RequestBody IncomingMessageRequest request) {
 
-        messageEventAdapter.toEvent(
-                request.phone(),
-                request.content(),
-                "whatsapp"
-        );
+        eventBus.publish(
+                new MessageEvent(
+                        request.phone(),
+                        request.content(),
+                        "whatsapp"));
     }
 }

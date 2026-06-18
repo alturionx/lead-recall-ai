@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.repository.LeadRepository;
+import br.com.alturionx.lead_recall_ai_backend.integration.openai.LeadInsight;
 
 @Service
 public class LeadService {
@@ -16,33 +17,44 @@ public class LeadService {
         this.leadRepository = leadRepository;
     }
 
-    public List<Lead> findAll(){
+    public List<Lead> findAll() {
         return leadRepository.findAll();
     }
 
-    /**
-     * 🔥 REGRA CORRETA:
-     * - nunca cria lead "vazio" persistido
-     * - só retorna entidade pronta pra enriquecimento
-     */
-    public Lead findOrCreateLead(String phone) {
-
-        if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("Phone is required");
-        }
-
-        return leadRepository.findByPhone(phone)
-                .orElseGet(() -> createTransientLead(phone));
+    public Lead findByPhone(String phone) {
+        return leadRepository.findByPhone(phone).orElse(null);
     }
 
-    /**
-     * ⚠️ IMPORTANTE:
-     * Lead novo NÃO é salvo aqui.
-     * Ele só será salvo depois da IA + Engine.
-     */
-    private Lead createTransientLead(String phone) {
-        Lead lead = new Lead();
-        lead.setPhone(phone);
-        return lead;
+    public Lead save(Lead lead) {
+        return leadRepository.save(lead);
+    }
+
+    // 🧠 aplica IA no lead
+    public void applyInsight(Lead lead, LeadInsight insight) {
+
+        lead.setIntent(insight.intent());
+        lead.setVehicleInterest(insight.vehicle());
+        lead.setBudget(insight.budget());
+        lead.setConfidence(insight.confidence());
+    }
+
+    // 📊 SCORE CENTRALIZADO (corrigido)
+    public void calculateScore(Lead lead) {
+
+        int score = 0;
+
+        if ("BUY_CAR".equals(lead.getIntent())) {
+            score += 60;
+        }
+
+        if (lead.getVehicleInterest() != null) {
+            score += 20;
+        }
+
+        if (lead.getBudget() != null && lead.getBudget() > 100000) {
+            score += 20;
+        }
+
+        lead.setScore(score);
     }
 }

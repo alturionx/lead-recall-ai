@@ -18,10 +18,9 @@ public class OpenAiService {
     private static final String API_URL =
             "https://api.groq.com/openai/v1/chat/completions";
 
-    // ⚠️ ideal: mover para application.properties
-    private static final String API_KEY = "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";
+    private static final String API_KEY =
+            "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";
 
-    // ✔️ MÉTODO PRINCIPAL (IA PURA — SEM MERGE, SEM REGRA DE NEGÓCIO)
     public LeadInsight analyze(String message) {
 
         try {
@@ -42,15 +41,16 @@ public class OpenAiService {
                                     "role", "system",
                                     "content",
                                     """
-                                    Você é um sistema de extração de leads.
-                                    Responda APENAS JSON válido no formato:
+                                    Extraia dados do lead e responda APENAS JSON válido:
+
                                     {
                                       "intent": "BUY_CAR | UNKNOWN",
-                                      "vehicle": "string ou null",
-                                      "budget": number ou null",
-                                      "confidence": number 0-1
+                                      "vehicle": "string|null",
+                                      "budget": number|null,
+                                      "confidence": number
                                     }
-                                    Não inclua texto fora do JSON.
+
+                                    Não escreva nada fora do JSON.
                                     """
                             ),
                             Map.of(
@@ -88,7 +88,6 @@ public class OpenAiService {
 
         } catch (Exception e) {
             System.out.println("IA ERROR: " + e.getMessage());
-
             return new LeadInsight("UNKNOWN", null, null, 0.5);
         }
     }

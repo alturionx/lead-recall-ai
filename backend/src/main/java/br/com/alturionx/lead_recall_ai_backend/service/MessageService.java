@@ -30,13 +30,7 @@ public class MessageService {
      */
     public Message processIncomingMessage(String phone, String content) {
 
-        Lead lead = leadRepository.findByPhone(phone)
-                .orElseGet(() -> {
-                    Lead newLead = new Lead();
-                    newLead.setPhone(phone);
-
-                    return leadRepository.save(newLead);
-                });
+        Lead lead = getOrCreateLead(phone);
 
         Message message = new Message();
         message.setContent(content);
@@ -45,6 +39,16 @@ public class MessageService {
         message.setLead(lead);
 
         return messageRepository.save(message);
+    }
+
+    public Lead getOrCreateLead(String phone) {
+
+        return leadRepository.findByPhone(phone)
+                .orElseGet(() -> {
+                    Lead newLead = new Lead();
+                    newLead.setPhone(phone);
+                    return leadRepository.save(newLead);
+                });
     }
 
     /**

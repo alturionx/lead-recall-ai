@@ -1,48 +1,59 @@
 # 🚀 Lead Recall AI
 
-Lead Recall AI is an intelligent lead recovery and opportunity matching platform built for dealerships and inventory-driven businesses.
+<p align="center">
+  <img src="./docs/banner.png" width="800"/>
+</p>
 
-It transforms customer conversations into actionable sales opportunities by using AI to detect purchase intent, structure lead data, and automatically match interested buyers with newly available inventory.
-
----
-
-## 💡 What it does
-
-Lead Recall AI continuously analyzes conversations from messaging channels such as WhatsApp, extracts meaningful intent using AI, and connects potential buyers to relevant products the moment they become available.
-
-When a new vehicle enters stock, the system automatically:
-
-- Identifies previously interested customers  
-- Matches them with compatible inventory  
-- Creates sales opportunities  
-- Triggers automated engagement actions (notifications, CRM updates, follow-ups)  
+<p align="center">
+  <b>Sistema inteligente de recuperação de leads e geração automática de oportunidades</b><br/>
+  para concessionárias e negócios baseados em estoque.
+</p>
 
 ---
 
-## ⚙️ Core Features
+## 💡 O que o sistema faz
 
-- 🧠 AI-powered purchase intent detection  
-- 🎯 Lead qualification and scoring system  
-- 📦 Real-time inventory monitoring & normalization  
-- 🔗 Intelligent lead-to-stock matching engine  
-- 📈 Automated opportunity generation  
-- 💬 WhatsApp integration (Evolution API / Meta API ready)  
-- 🔄 CRM & ERP integration support  
-- ⚡ Event-driven architecture  
-- 🌐 Multi-channel support (WhatsApp, Instagram, Web Chat, etc.)  
+O **Lead Recall AI** transforma conversas de clientes em oportunidades reais de venda utilizando IA, processamento de eventos e um motor de matching entre leads e veículos.
+
+Ele analisa mensagens recebidas (ex: WhatsApp), extrai intenção de compra e mantém os leads vivos no sistema.
 
 ---
 
-## 🧪 Example: AI in action
+### 🔄 Fluxo automático
 
-### 📩 Incoming message
+Quando novos veículos entram no estoque, o sistema:
 
+- 🧠 Identifica leads com interesse compatível  
+- 🔍 Executa o motor de matching inteligente  
+- 🚗 Cria oportunidades automaticamente  
+- 📊 Calcula score do lead e da oportunidade  
+- 🤖 Aciona fluxo de automação comercial  
 
+---
+
+## ⚙️ Funcionalidades principais
+
+- 🧠 Detecção de intenção de compra com IA  
+- 🎯 Sistema de qualificação e score de leads  
+- 📦 Monitoramento de estoque em tempo real  
+- 🔗 Motor de matching lead × veículo  
+- 📈 Geração automática de oportunidades  
+- 💬 Integração com WhatsApp (Evolution API / Meta API ready)  
+- 🔄 Integração com CRM e ERP  
+- ⚡ Arquitetura orientada a eventos  
+- 🌐 Suporte multi-canal  
+
+---
+
+## 🧪 Exemplo: IA em ação
+
+### 📩 Mensagem recebida
+
+```txt
 "Quero um Corolla usado até 80 mil"
+```
 
-
-### 🧠 AI extraction result
-
+### 🧠 Extração via IA
 ```json
 {
   "intent": "BUY_CAR",
@@ -52,83 +63,84 @@ When a new vehicle enters stock, the system automatically:
 }
 ```
 
-### 📊 Lead created in system
+### 📊 Lead criado no sistema
 ```json
 {
   "phone": "5511999999999",
   "intent": "BUY_CAR",
   "vehicleInterest": "Toyota Corolla",
   "budget": 80000,
+  "confidence": 0.90,
   "score": 80
 }
 ```
 
-## 🚗 Example: Matching engine
+## 🚗 Exemplo: Motor de matching
 
-When a new vehicle arrives:
-
-### 🆕 Inventory update
+### 🆕 Veículo cadastrado
 Toyota Corolla XEi 2022 - R$ 79.900
 
-### 🔍 System match result
-Match found:
+### 🔍 Resultado do sistema
+Match encontrado:
+
 - Lead: 5511999999999
-- Interest: Toyota Corolla
-- Budget compatibility: YES
-- Score: 80
+- Interesse: Toyota Corolla
+- Compatibilidade de orçamento: SIM
+- Score do lead: 80
 
-### 🤖 Automated action
-📲 WhatsApp message sent:
+## 🏗️ Arquitetura do sistema
 
-"Olá! Temos um Toyota Corolla XEi 2022 disponível por R$ 79.900.
-Ainda tem interesse?"
+O Lead Recall AI é baseado em uma arquitetura orientada a eventos, projetada para escalabilidade e processamento em tempo real.
 
-# 🏗️ Architecture Overview
+### 🔌 Componentes principais
+- 📩 Entrada de mensagens
+- Recebe mensagens de WhatsApp, Instagram e Web Chat
+- 🔌 Camada de adaptação
+- Normaliza diferentes formatos em eventos únicos
+- ⚙️ EventBus (núcleo do sistema)
+- Orquestra todos os eventos internos
+- 🧠 Motor de IA
+- Extrai intenção, orçamento e confiança
+- 🚗 Motor de estoque
+- Gerencia veículos disponíveis
+- 🔍 Motor de matching
+- Conecta leads com veículos compatíveis
+- 🤖 Camada de automação
+- Cria oportunidades e executa ações
+- 📊 Módulo de análise
+- Métricas de performance e conversão
 
-Lead Recall AI is built on a scalable event-driven architecture designed for real-time processing and extensibility.
+## 🎯 Objetivo
 
-Core Components
-📩 Messaging Providers
-Handles incoming messages from external channels (WhatsApp, Instagram, Web Chat)
-🔌 Adapter Layer
-Normalizes different messaging formats into a unified event structure
-⚙️ Event Processing Core
-Orchestrates system events and business workflows
-🧠 AI Intelligence Module
-Extracts intent, sentiment, and purchase signals from conversations
-🚗 Inventory Engine
-Tracks stock updates and normalizes product data
-🔍 Matching Engine
-Connects leads with relevant inventory based on behavior and intent
-🤖 Automation Layer
-Executes actions such as notifications, CRM updates, and follow-ups
-📊 Dashboard & Analytics
-Provides insights into leads, opportunities, and conversion performance
-🎯 Goal
+Transformar conversas de clientes em oportunidades reais de venda, automaticamente e em tempo real.
 
-Transform historical and real-time customer conversations into high-value sales opportunities, automatically reconnecting interested buyers with newly available inventory.
+## ⚡ Visão
 
-# ⚡Vision
+<p align="center"> <b>“Nenhum lead deveria ser perdido por falta de memória do sistema.”</b> </p>
 
-Turn every conversation into a potential sale — even months after it happened.
+## 🧠 Stack tecnológica
+- Java 21
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- Arquitetura orientada a eventos
+- Integração com IA (OpenAI / Groq compatible)
 
-# 🧠 Lead Recall AI
+### 🔥 Por que isso importa
 
-“Every lead remembered. Every opportunity recovered.”
+A maioria das vendas perdidas não acontece porque o cliente disse “não”…
 
-# 📌 Tech highlights
-Java 21 + Spring Boot
-Spring Data JPA
-MySQL
-Event-driven architecture
-REST + Messaging integration
-AI-powered lead extraction (Groq / OpenAI compatible)
+mas porque ninguém lembrou dele depois.
 
-# 🔥 Why it matters
-
-Most leads are lost not because they said “no”…
-but because no system remembered them.
-
-Lead Recall AI fixes that.
-
-It turns forgotten conversations into active revenue opportunities.
+## 💡 O Lead Recall AI resolve isso:
+- 👉 Ele lembra
+- 👉 Ele entende
+- 👉 Ele reconecta
+- 👉 Ele vende
+- 📌 Próximos passos (evolução)
+- 🔎 Matching fuzzy (Levenshtein / NLP)
+- 🧠 Embeddings para matching semântico
+- 📊 Score avançado de oportunidades
+- ⚡ Processamento assíncrono (Kafka/RabbitMQ)
+- 📈 Dashboard comercial completo
+- 🔁 Reativação automática de leads antigos
