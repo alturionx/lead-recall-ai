@@ -103,16 +103,16 @@ export default function Dashboard() {
 
                 {/* HEADER */}
 
-                <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-gradient-to-br from-emerald-500/10 via-[#0B1220] to-cyan-500/10 p-8">
+                <div className="relative overflow-hidden rounded-xl border border-white/10 bg-linear-to-br from-emerald-500/10 via-[#0B1220] to-cyan-500/10 p-8">
 
-                    <div className="absolute top-0 right-0 h-72 w-72 rounded-[12px] bg-emerald-500/20 blur-3xl" />
+                    <div className="absolute top-0 right-0 h-72 w-72 rounded-xl bg-emerald-500/20 blur-3xl" />
 
-                    <div className="absolute bottom-0 left-0 h-72 w-72 rounded-[12px] bg-cyan-500/10 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 h-72 w-72 rounded-xl bg-cyan-500/10 blur-3xl" />
 
                     <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
                         <div>
-                            <div className="inline-flex items-center gap-2 rounded-[12px] border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-400">
+                            <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-400">
                                 <Sparkles size={16} />
                                 IA ativa e processando leads
                             </div>
@@ -212,7 +212,7 @@ export default function Dashboard() {
 
                 <div className="grid gap-4 xl:grid-cols-12">
 
-                    <div className="xl:col-span-8 rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
+                    <div className="xl:col-span-8 rounded-xl border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
 
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-xl font-semibold text-white">
@@ -256,10 +256,10 @@ export default function Dashboard() {
 
                         </div>
 
-                        <div className="mt-10 h-64 rounded-[12px] border border-white/5 bg-gradient-to-t from-emerald-500/10 via-transparent to-transparent" />
+                        <div className="mt-10 h-64 rounded-xl border border-white/5 bg-linear-to-t from-emerald-500/10 via-transparent to-transparent" />
                     </div>
 
-                    <div className="xl:col-span-4 rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
+                    <div className="xl:col-span-4 rounded-xl border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
 
                         <h3 className="mb-8 text-xl font-semibold text-white">
                             Performance da IA
@@ -302,7 +302,7 @@ export default function Dashboard() {
 
                 <div className="grid gap-4 xl:grid-cols-12">
 
-                    <div className="xl:col-span-8 rounded-[12px] border border-white/10 bg-[#0B1220]/70 backdrop-blur-xl overflow-hidden">
+                    <div className="xl:col-span-8 rounded-xl border border-white/10 bg-[#0B1220]/70 backdrop-blur-xl overflow-hidden">
 
                         <div className="border-b border-white/10 p-6">
                             <h3 className="text-xl font-semibold text-white">
@@ -313,7 +313,7 @@ export default function Dashboard() {
                         <div className="overflow-x-auto">
 
                             <div className="overflow-x-auto">
-                                <table className="min-w-[700px] w-full">
+                                <table className="min-w-175 w-full">
                                     <thead>
                                         <tr className="text-left text-zinc-500">
                                             <th className="px-6 py-4">Lead</th>
@@ -328,7 +328,7 @@ export default function Dashboard() {
                                         {recentLeads.map((lead) => (
                                             <tr
                                                 key={lead.id}
-                                                className="border-t border-white/5 hover:bg-white/[0.02]"
+                                                className="border-t border-white/5 hover:bg-white/2"
                                             >
                                                 <td className="px-6 py-4">
                                                     <div>
@@ -418,7 +418,7 @@ export default function Dashboard() {
 
                     {/* MATCHING */}
 
-                    <div className="xl:col-span-4 rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6">
+                    <div className="xl:col-span-4 rounded-xl border border-white/10 bg-[#0B1220]/70 p-6">
 
                         <h3 className="text-xl font-semibold text-white mb-6">
                             Matching de Veículos
@@ -437,8 +437,8 @@ export default function Dashboard() {
                                     </span>
                                 </div>
 
-                                <div className="h-2 rounded-[12px] bg-white/5">
-                                    <div className="h-2 w-[90%] rounded-[12px] bg-emerald-500" />
+                                <div className="h-2 rounded-xl bg-white/5">
+                                    <div className="h-2 w-[90%] rounded-xl bg-emerald-500" />
                                 </div>
                             </div>
 
@@ -453,8 +453,8 @@ export default function Dashboard() {
                                     </span>
                                 </div>
 
-                                <div className="h-2 rounded-[12px] bg-white/5">
-                                    <div className="h-2 w-[75%] rounded-[12px] bg-cyan-500" />
+                                <div className="h-2 rounded-xl bg-white/5">
+                                    <div className="h-2 w-[75%] rounded-xl bg-cyan-500" />
                                 </div>
                             </div>
 
@@ -469,8 +469,8 @@ export default function Dashboard() {
                                     </span>
                                 </div>
 
-                                <div className="h-2 rounded-[12px] bg-white/5">
-                                    <div className="h-2 w-[60%] rounded-[12px] bg-yellow-500" />
+                                <div className="h-2 rounded-xl bg-white/5">
+                                    <div className="h-2 w-[60%] rounded-xl bg-yellow-500" />
                                 </div>
                             </div>
 
@@ -485,8 +485,8 @@ export default function Dashboard() {
                                     </span>
                                 </div>
 
-                                <div className="h-2 rounded-[12px] bg-white/5">
-                                    <div className="h-2 w-[40%] rounded-[12px] bg-purple-500" />
+                                <div className="h-2 rounded-xl bg-white/5">
+                                    <div className="h-2 w-[40%] rounded-xl bg-purple-500" />
                                 </div>
                             </div>
 
@@ -496,7 +496,7 @@ export default function Dashboard() {
 
                     {/* IA INSIGHTS */}
 
-                    <div className="xl:col-span-4 rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6">
+                    <div className="xl:col-span-4 rounded-xl border border-white/10 bg-[#0B1220]/70 p-6">
 
                         <h3 className="text-xl font-semibold text-white mb-6">
                             Insights da IA
@@ -504,7 +504,7 @@ export default function Dashboard() {
 
                         <div className="space-y-4">
 
-                            <div className="rounded-[12px] border border-emerald-500/10 bg-emerald-500/5 p-4">
+                            <div className="rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-4">
                                 <p className="text-emerald-400 text-sm">
                                     Tendência
                                 </p>
@@ -514,7 +514,7 @@ export default function Dashboard() {
                                 </h4>
                             </div>
 
-                            <div className="rounded-[12px] border border-blue-500/10 bg-blue-500/5 p-4">
+                            <div className="rounded-xl border border-blue-500/10 bg-blue-500/5 p-4">
                                 <p className="text-blue-400 text-sm">
                                     Oportunidade
                                 </p>
@@ -524,7 +524,7 @@ export default function Dashboard() {
                                 </h4>
                             </div>
 
-                            <div className="rounded-[12px] border border-purple-500/10 bg-purple-500/5 p-4">
+                            <div className="rounded-xl border border-purple-500/10 bg-purple-500/5 p-4">
                                 <p className="text-purple-400 text-sm">
                                     Previsão
                                 </p>
@@ -540,7 +540,7 @@ export default function Dashboard() {
 
                     {/* EVENTOS */}
 
-                    <div className="xl:col-span-4 rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6">
+                    <div className="xl:col-span-4 rounded-xl border border-white/10 bg-[#0B1220]/70 p-6">
 
                         <h3 className="text-xl font-semibold text-white mb-6">
                             Eventos Recentes
@@ -585,7 +585,7 @@ function KpiCard({
     icon,
 }) {
     return (
-        <div className="rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
+        <div className="rounded-xl border border-white/10 bg-[#0B1220]/70 p-6 backdrop-blur-xl">
 
             <div className="flex items-center justify-between">
                 {icon}
@@ -609,7 +609,7 @@ function KpiCard({
 
 function MiniStat({ title, value }) {
     return (
-        <div className="rounded-[12px] border border-white/10 bg-white/5 p-4">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs text-zinc-500">
                 {title}
             </p>
@@ -638,7 +638,7 @@ function PipelineRow({
                 </span>
             </div>
 
-            <div className="h-3 rounded-[12px] bg-white/5 overflow-hidden">
+            <div className="h-3 rounded-xl bg-white/5 overflow-hidden">
                 <div
                     className={`h-full ${color}`}
                     style={{
@@ -666,8 +666,8 @@ function PerformanceItem({
                 </span>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-[12px] bg-white/5">
-                <div className="h-full w-[90%] rounded-[12px] bg-emerald-500" />
+            <div className="h-2 overflow-hidden rounded-xl bg-white/5">
+                <div className="h-full w-[90%] rounded-xl bg-emerald-500" />
             </div>
         </div>
     );
@@ -679,7 +679,7 @@ function SideCard({
     icon,
 }) {
     return (
-        <div className="rounded-[12px] border border-white/10 bg-[#0B1220]/70 p-5 backdrop-blur-xl">
+        <div className="rounded-xl border border-white/10 bg-[#0B1220]/70 p-5 backdrop-blur-xl">
 
             <div className="flex items-center justify-between">
                 {icon}
@@ -704,7 +704,7 @@ function EventItem({
     return (
         <div className="flex gap-3">
 
-            <div className="mt-1 h-2 w-2 rounded-[12px] bg-emerald-400" />
+            <div className="mt-1 h-2 w-2 rounded-xl bg-emerald-400" />
 
             <div>
                 <p className="text-white text-sm font-medium">

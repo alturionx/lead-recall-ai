@@ -45,7 +45,7 @@ export default function Sidebar({
                 {
                     name: "Conversas",
                     icon: MessageSquare,
-                    path: "/",
+                    path: "/admin/simulator",
                 },
                 {
                     name: "Insights",

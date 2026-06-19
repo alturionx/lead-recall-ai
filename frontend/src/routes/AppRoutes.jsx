@@ -10,6 +10,7 @@ import Login from "../pages/Admin/Login/Login";
 
 // SECURITY
 import AdminRoute from "../security/AdminRoute";
+import Simulator from "../pages/Admin/Simulator/Simulator";
 
 export default function AppRoutes() {
     const isLogged = !!localStorage.getItem("token");
@@ -37,6 +38,7 @@ export default function AppRoutes() {
 
                         <Route path="/admin/dashboard" element={<Dashboard />} />
                         <Route path="/admin/configuracoes" element={<Configuracoes />} />
+                        <Route path="/admin/simulator" element={<Simulator />} />
 
                     </Route>
                 </Route>
