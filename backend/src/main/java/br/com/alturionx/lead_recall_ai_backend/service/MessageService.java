@@ -1,13 +1,13 @@
 package br.com.alturionx.lead_recall_ai_backend.service;
 
-import org.springframework.stereotype.Service;
-
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.model.Message;
 import br.com.alturionx.lead_recall_ai_backend.repository.LeadRepository;
 import br.com.alturionx.lead_recall_ai_backend.repository.MessageRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MessageService {
@@ -33,7 +33,7 @@ public class MessageService {
         Lead lead = getOrCreateLead(phone);
 
         Message message = new Message();
-        message.setContent(content);
+        message.setContent(content == null ? "" : content.trim());
         message.setDirection("INBOUND");
         message.setCreatedAt(LocalDateTime.now());
         message.setLead(lead);
@@ -41,6 +41,9 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    /**
+     * 🆕 Obtém ou cria lead
+     */
     public Lead getOrCreateLead(String phone) {
 
         return leadRepository.findByPhone(phone)
@@ -63,5 +66,32 @@ public class MessageService {
      */
     public Lead saveLead(Lead lead) {
         return leadRepository.save(lead);
+    }
+
+    /**
+     * 🧠 Histórico completo do lead
+     * (vamos usar para fornecer contexto à IA)
+     */
+    public List<Message> getLeadMessages(Lead lead) {
+
+        if (lead == null) {
+            return List.of();
+        }
+
+        return messageRepository.findByLeadOrderByCreatedAtAsc(lead);
+    }
+
+    /**
+     * 🧠 Histórico por telefone
+     */
+    public List<Message> getLeadMessages(String phone) {
+
+        Lead lead = findLeadByPhone(phone);
+
+        if (lead == null) {
+            return List.of();
+        }
+
+        return messageRepository.findByLeadOrderByCreatedAtAsc(lead);
     }
 }

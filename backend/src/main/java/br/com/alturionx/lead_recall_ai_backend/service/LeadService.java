@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import br.com.alturionx.lead_recall_ai_backend.integration.openai.LeadInsight;
 import br.com.alturionx.lead_recall_ai_backend.model.Lead;
 import br.com.alturionx.lead_recall_ai_backend.repository.LeadRepository;
-import br.com.alturionx.lead_recall_ai_backend.integration.openai.LeadInsight;
 
 @Service
 public class LeadService {
@@ -29,32 +29,74 @@ public class LeadService {
         return leadRepository.save(lead);
     }
 
-    // 🧠 aplica IA no lead
+    /**
+     * Aplica informações extraídas pela IA sem destruir
+     * contexto já conhecido do lead.
+     */
     public void applyInsight(Lead lead, LeadInsight insight) {
 
-        lead.setIntent(insight.intent());
-        lead.setVehicleInterest(insight.vehicle());
-        lead.setBudget(insight.budget());
-        lead.setConfidence(insight.confidence());
+        if (lead == null || insight == null) {
+            return;
+        }
+
+        // Intent
+        if (insight.intent() != null
+                && !insight.intent().isBlank()
+                && !"UNKNOWN".equalsIgnoreCase(insight.intent())) {
+
+            lead.setIntent(insight.intent().trim());
+        }
+
+        // Veículo
+        if (insight.vehicle() != null
+                && !insight.vehicle().isBlank()) {
+
+            lead.setVehicleInterest(insight.vehicle().trim());
+        }
+
+        // Orçamento
+        if (insight.budget() != null
+                && insight.budget() > 0) {
+
+            lead.setBudget(insight.budget());
+        }
+
+        // Confiança
+        if (insight.confidence() != null) {
+            lead.setConfidence(insight.confidence());
+        }
     }
 
-    // 📊 SCORE CENTRALIZADO (corrigido)
+    /**
+     * Score baseado no estado atual do lead,
+     * não na última mensagem recebida.
+     */
     public void calculateScore(Lead lead) {
 
         int score = 0;
 
-        if ("BUY_CAR".equals(lead.getIntent())) {
+        if ("BUY_CAR".equalsIgnoreCase(lead.getIntent())) {
             score += 60;
         }
 
-        if (lead.getVehicleInterest() != null) {
+        if (lead.getVehicleInterest() != null
+                && !lead.getVehicleInterest().isBlank()) {
             score += 20;
         }
 
-        if (lead.getBudget() != null && lead.getBudget() > 100000) {
-            score += 20;
+        if (lead.getBudget() != null) {
+
+            if (lead.getBudget() >= 100000) {
+                score += 20;
+            } else if (lead.getBudget() >= 50000) {
+                score += 10;
+            }
         }
 
-        lead.setScore(score);
+        if (lead.getConfidence() != null) {
+            score += (int) (lead.getConfidence() * 20);
+        }
+
+        lead.setScore(Math.min(score, 100));
     }
 }
