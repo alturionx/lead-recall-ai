@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,10 +18,11 @@ public class OpenAiService {
     private static final String API_URL =
             "https://api.groq.com/openai/v1/chat/completions";
 
+    private static final String apiKey =
+            "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";
+
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
-    private static final String apiKey = "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";
 
     public OpenAiService() {
         this.restTemplate = new RestTemplate();
@@ -28,21 +30,37 @@ public class OpenAiService {
     }
 
     /**
-     * Compatibilidade com o código atual.
+     * Compatibilidade com versões antigas.
      */
     public LeadInsight analyze(String message) {
-        return analyzeConversation(message == null ? "" : message);
+
+        return analyzeConversation(
+                message == null ? "" : message
+        );
     }
 
     /**
-     * Próxima etapa:
-     * análise usando histórico de conversa.
+     * Análise contextual usando histórico.
      */
     public LeadInsight analyze(List<Message> messages) {
 
+        if (messages == null || messages.isEmpty()) {
+            return analyzeConversation("");
+        }
+
         String conversation = messages.stream()
-                .sorted((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()))
-                .map(Message::getContent)
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .limit(20)
+                .map(m -> {
+
+                    String role =
+                            "OUTBOUND".equalsIgnoreCase(m.getDirection())
+                                    ? "ATENDENTE"
+                                    : "CLIENTE";
+
+                    return role + ": " + m.getContent();
+
+                })
                 .collect(Collectors.joining("\n"));
 
         return analyzeConversation(conversation);
@@ -54,10 +72,7 @@ public class OpenAiService {
 
             String cleanConversation = conversation == null
                     ? ""
-                    : conversation
-                    .replace("\n", " ")
-                    .replace("\r", " ")
-                    .trim();
+                    : conversation.trim();
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -67,30 +82,43 @@ public class OpenAiService {
                     "model", "llama-3.1-8b-instant",
                     "temperature", 0.1,
                     "response_format", Map.of(
-                            "type", "json_object"
+                            "type",
+                            "json_object"
                     ),
                     "messages", List.of(
+
                             Map.of(
                                     "role",
                                     "system",
                                     "content",
                                     """
-                                    Você é um extrator de intenção comercial para concessionárias.
+                                    Você é um motor de inteligência comercial para concessionárias.
 
-                                    Analise TODA a conversa e preserve contexto já mencionado.
+                                    Sua função é analisar TODA a conversa e manter contexto acumulado.
 
-                                    Regras:
+                                    REGRAS IMPORTANTES:
 
-                                    - Se o cliente já demonstrou interesse em um veículo,
-                                      mantenha esse interesse mesmo que mensagens posteriores
-                                      sejam vagas.
+                                    1. Nunca descarte informações anteriores válidas apenas porque
+                                       a última mensagem não as mencionou.
 
-                                    - Não remova veículo ou orçamento apenas porque a última
-                                      mensagem não menciona esses dados.
+                                    2. Se o cliente disse:
+                                       "Tem Corolla?"
+                                       e depois:
+                                       "Consegue financiar?"
+                                       o veículo continua sendo Corolla.
 
-                                    - Responda SOMENTE JSON válido.
+                                    3. Se existir orçamento anterior válido,
+                                       preserve o orçamento.
 
-                                    Formato:
+                                    4. Se existir intenção de compra anterior,
+                                       preserve a intenção.
+
+                                    5. Só retorne UNKNOWN quando realmente não existir
+                                       informação suficiente.
+
+                                    6. Confidence deve ser um número entre 0.0 e 1.0.
+
+                                    Responda SOMENTE JSON válido:
 
                                     {
                                       "intent": "BUY_CAR | UNKNOWN",
@@ -100,6 +128,7 @@ public class OpenAiService {
                                     }
                                     """
                             ),
+
                             Map.of(
                                     "role",
                                     "user",
@@ -135,10 +164,23 @@ public class OpenAiService {
                     .replace("```", "")
                     .trim();
 
-            return objectMapper.readValue(
-                    content,
-                    LeadInsight.class
-            );
+            LeadInsight insight =
+                    objectMapper.readValue(
+                            content,
+                            LeadInsight.class
+                    );
+
+            if (insight.confidence() == null) {
+
+                return new LeadInsight(
+                        insight.intent(),
+                        insight.vehicle(),
+                        insight.budget(),
+                        0.0
+                );
+            }
+
+            return insight;
 
         } catch (Exception e) {
 

@@ -26,16 +26,27 @@ public class MessageService {
     /**
      * 📩 Responsabilidade:
      * - Garantir que o Lead exista
+     * - Atualizar última interação
      * - Salvar Message vinculada ao Lead
      */
     public Message processIncomingMessage(String phone, String content) {
 
+        if (phone == null || phone.isBlank()) {
+            throw new IllegalArgumentException("Phone não pode ser vazio");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
         Lead lead = getOrCreateLead(phone);
+
+        // Atualiza atividade recente
+        lead.setLastInteractionAt(now);
+        leadRepository.save(lead);
 
         Message message = new Message();
         message.setContent(content == null ? "" : content.trim());
         message.setDirection("INBOUND");
-        message.setCreatedAt(LocalDateTime.now());
+        message.setCreatedAt(now);
         message.setLead(lead);
 
         return messageRepository.save(message);
@@ -48,8 +59,10 @@ public class MessageService {
 
         return leadRepository.findByPhone(phone)
                 .orElseGet(() -> {
+
                     Lead newLead = new Lead();
                     newLead.setPhone(phone);
+
                     return leadRepository.save(newLead);
                 });
     }
@@ -70,7 +83,6 @@ public class MessageService {
 
     /**
      * 🧠 Histórico completo do lead
-     * (vamos usar para fornecer contexto à IA)
      */
     public List<Message> getLeadMessages(Lead lead) {
 
@@ -82,7 +94,7 @@ public class MessageService {
     }
 
     /**
-     * 🧠 Histórico por telefone
+     * 🧠 Histórico completo por telefone
      */
     public List<Message> getLeadMessages(String phone) {
 
@@ -92,6 +104,60 @@ public class MessageService {
             return List.of();
         }
 
-        return messageRepository.findByLeadOrderByCreatedAtAsc(lead);
+        return getLeadMessages(lead);
+    }
+
+    /**
+     * 🧠 Últimas mensagens para contexto da IA
+     * Evita enviar conversas gigantes para o LLM.
+     */
+    public List<Message> getRecentMessages(Lead lead) {
+
+        if (lead == null) {
+            return List.of();
+        }
+
+        return messageRepository
+                .findTop20ByLeadOrderByCreatedAtDesc(lead);
+    }
+
+    /**
+     * 🧠 Últimas mensagens por telefone
+     */
+    public List<Message> getRecentMessages(String phone) {
+
+        Lead lead = findLeadByPhone(phone);
+
+        if (lead == null) {
+            return List.of();
+        }
+
+        return getRecentMessages(lead);
+    }
+
+    /**
+     * 🕒 Quantidade total de interações
+     */
+    public long getInteractionCount(Lead lead) {
+
+        if (lead == null) {
+            return 0;
+        }
+
+        return getLeadMessages(lead).size();
+    }
+
+    /**
+     * 🕒 Quantidade total de interações por telefone
+     */
+    public long getInteractionCount(String phone) {
+
+        Lead lead = findLeadByPhone(phone);
+
+        if (lead == null) {
+            return 0;
+        }
+
+        return getInteractionCount(lead);
     }
 }

@@ -53,38 +53,70 @@ public class AIEventHandler {
         Lead lead = leadService.findByPhone(event.phone());
 
         if (lead == null) {
+            System.out.println(
+                    "⚠️ Lead não encontrado: " + event.phone()
+            );
             return;
         }
 
-        // 🧠 Busca histórico completo do lead
-        List<Message> messages =
-                messageService.getLeadMessages(event.phone());
+        try {
 
-        LeadInsight insight;
+            // 🧠 Apenas histórico recente
+            List<Message> messages =
+                    messageService.getRecentMessages(event.phone());
 
-        // Fallback de segurança
-        if (messages == null || messages.isEmpty()) {
-            insight = openAiService.analyze(event.message());
-        } else {
-            insight = openAiService.analyze(messages);
+            LeadInsight insight;
+
+            if (messages == null || messages.isEmpty()) {
+
+                System.out.println(
+                        "🧠 IA sem histórico para " + event.phone()
+                );
+
+                insight = openAiService.analyze(
+                        event.message()
+                );
+
+            } else {
+
+                System.out.println(
+                        "🧠 IA usando "
+                                + messages.size()
+                                + " mensagens de contexto"
+                );
+
+                insight = openAiService.analyze(messages);
+            }
+
+            if (insight == null) {
+                return;
+            }
+
+            // 🔥 Merge inteligente
+            leadService.applyInsight(
+                    lead,
+                    insight
+            );
+
+            // 📊 Recalcula score e heat score
+            leadService.calculateScore(lead);
+
+            // 💾 Persiste alterações
+            leadService.save(lead);
+
+            // 🚀 Continua pipeline
+            eventBus.publish(
+                    new LeadEnrichedEvent(event.phone())
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "❌ Erro na análise IA: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
         }
-
-        if (insight == null) {
-            return;
-        }
-
-        // Merge inteligente
-        leadService.applyInsight(lead, insight);
-
-        // Recalcula score usando estado acumulado
-        leadService.calculateScore(lead);
-
-        // Salva
-        leadService.save(lead);
-
-        // Continua pipeline
-        eventBus.publish(
-                new LeadEnrichedEvent(event.phone())
-        );
     }
 }

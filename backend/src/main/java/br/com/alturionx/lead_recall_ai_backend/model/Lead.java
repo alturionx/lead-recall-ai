@@ -21,16 +21,52 @@ public class Lead {
 
     private String name;
 
+    /**
+     * Score comercial geral (0-100)
+     */
     private Integer score = 0;
 
-    // 🧠 NOVOS CAMPOS (IA)
+    /**
+     * Interesse principal identificado
+     */
     private String vehicleInterest;
 
+    /**
+     * Orçamento informado
+     */
     private Integer budget;
 
+    /**
+     * BUY_CAR, UNKNOWN...
+     */
     private String intent;
 
+    /**
+     * Compatibilidade com versões antigas.
+     * Vamos remover futuramente.
+     */
     private Double confidence;
+
+    /**
+     * Confiança da última análise da IA.
+     */
+    private Double currentConfidence;
+
+    /**
+     * Maior confiança já observada.
+     */
+    private Double maxConfidence;
+
+    /**
+     * Temperatura comercial.
+     */
+    private Integer heatScore = 0;
+
+    /**
+     * Última interação recebida do lead.
+     * Usado para priorização comercial.
+     */
+    private LocalDateTime lastInteractionAt;
 
     private LocalDateTime createdAt;
 
@@ -38,8 +74,20 @@ public class Lead {
 
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        createdAt = now;
+        updatedAt = now;
+        lastInteractionAt = now;
+
+        if (score == null) {
+            score = 0;
+        }
+
+        if (heatScore == null) {
+            heatScore = 0;
+        }
     }
 
     @PreUpdate
