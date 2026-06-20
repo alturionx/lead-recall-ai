@@ -1,17 +1,25 @@
 package br.com.alturionx.lead_recall_ai_backend.automation;
 
+import br.com.alturionx.lead_recall_ai_backend.event.EventBus;
+import br.com.alturionx.lead_recall_ai_backend.event.LeadEnrichedEvent;
+import br.com.alturionx.lead_recall_ai_backend.event.OpportunityCreatedEvent;
+import br.com.alturionx.lead_recall_ai_backend.event.VehicleUpsertedEvent;
+import br.com.alturionx.lead_recall_ai_backend.matcher.LeadVehicleMatcher;
+import br.com.alturionx.lead_recall_ai_backend.matcher.MatchResult;
+import br.com.alturionx.lead_recall_ai_backend.model.Lead;
+import br.com.alturionx.lead_recall_ai_backend.model.Vehicle;
+import br.com.alturionx.lead_recall_ai_backend.repository.LeadRepository;
+import br.com.alturionx.lead_recall_ai_backend.repository.OpportunityRepository;
+import br.com.alturionx.lead_recall_ai_backend.repository.VehicleRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import br.com.alturionx.lead_recall_ai_backend.event.*;
-import br.com.alturionx.lead_recall_ai_backend.matcher.LeadVehicleMatcher;
-import br.com.alturionx.lead_recall_ai_backend.model.*;
-import br.com.alturionx.lead_recall_ai_backend.repository.*;
-
 @Component
 public class MatchingEventHandler {
+
+    private static final int MIN_OPPORTUNITY_SCORE = 50;
 
     private final EventBus eventBus;
     private final LeadRepository leadRepository;
@@ -19,11 +27,13 @@ public class MatchingEventHandler {
     private final LeadVehicleMatcher matcher;
     private final OpportunityRepository opportunityRepository;
 
-    public MatchingEventHandler(EventBus eventBus,
-                                LeadRepository leadRepository,
-                                VehicleRepository vehicleRepository,
-                                LeadVehicleMatcher matcher,
-                                OpportunityRepository opportunityRepository) {
+    public MatchingEventHandler(
+            EventBus eventBus,
+            LeadRepository leadRepository,
+            VehicleRepository vehicleRepository,
+            LeadVehicleMatcher matcher,
+            OpportunityRepository opportunityRepository
+    ) {
         this.eventBus = eventBus;
         this.leadRepository = leadRepository;
         this.vehicleRepository = vehicleRepository;
@@ -33,17 +43,40 @@ public class MatchingEventHandler {
 
     @PostConstruct
     public void init() {
-        eventBus.subscribe(LeadEnrichedEvent.class, this::onLeadUpdated);
-        eventBus.subscribe(VehicleUpsertedEvent.class, this::onVehicleUpdated);
+
+        eventBus.subscribe(
+                LeadEnrichedEvent.class,
+                this::onLeadUpdated
+        );
+
+        eventBus.subscribe(
+                VehicleUpsertedEvent.class,
+                this::onVehicleUpdated
+        );
     }
 
-    // 🚗 LEAD → VEHICLE
+    /**
+     * Lead atualizado -> procura veículos compatíveis.
+     */
     private void onLeadUpdated(LeadEnrichedEvent event) {
 
-        if (event == null || event.phone() == null) return;
+        if (event == null
+                || event.phone() == null
+                || event.phone().isBlank()) {
+            return;
+        }
 
-        Lead lead = leadRepository.findByPhone(event.phone()).orElse(null);
-        if (lead == null || lead.getVehicleInterest() == null) return;
+        Lead lead = leadRepository.findByPhone(event.phone())
+                .orElse(null);
+
+        if (lead == null) {
+            return;
+        }
+
+        if (lead.getVehicleInterest() == null
+                || lead.getVehicleInterest().isBlank()) {
+            return;
+        }
 
         List<Vehicle> vehicles =
                 vehicleRepository.findByModelContainingIgnoreCase(
@@ -51,18 +84,32 @@ public class MatchingEventHandler {
                 );
 
         for (Vehicle vehicle : vehicles) {
-            if (!matcher.matches(lead, vehicle)) continue;
-            publishOpportunity(lead, vehicle);
+
+            MatchResult result = matcher.match(lead, vehicle);
+
+            if (result == null || result.score() < MIN_OPPORTUNITY_SCORE) {
+                continue;
+            }
+
+            publishOpportunity(lead, vehicle, result);
         }
     }
 
-    // 🚗 VEHICLE → LEAD
+    /**
+     * Veículo atualizado -> procura leads compatíveis.
+     */
     private void onVehicleUpdated(VehicleUpsertedEvent event) {
 
-        if (event == null) return;
+        if (event == null) {
+            return;
+        }
 
-        Vehicle vehicle = vehicleRepository.findById(event.vehicleId()).orElse(null);
-        if (vehicle == null) return;
+        Vehicle vehicle = vehicleRepository.findById(event.vehicleId())
+                .orElse(null);
+
+        if (vehicle == null) {
+            return;
+        }
 
         List<Lead> leads =
                 leadRepository.findByVehicleInterestContainingIgnoreCase(
@@ -70,29 +117,66 @@ public class MatchingEventHandler {
                 );
 
         for (Lead lead : leads) {
-            if (!matcher.matches(lead, vehicle)) continue;
-            publishOpportunity(lead, vehicle);
+
+            MatchResult result = matcher.match(lead, vehicle);
+
+            if (result == null || result.score() < MIN_OPPORTUNITY_SCORE) {
+                continue;
+            }
+
+            publishOpportunity(lead, vehicle, result);
         }
     }
 
-    // 🔥 CENTRALIZAÇÃO (evita duplicação)
-    private void publishOpportunity(Lead lead, Vehicle vehicle) {
+    /**
+     * Centraliza criação de oportunidade.
+     */
+    private void publishOpportunity(
+            Lead lead,
+            Vehicle vehicle,
+            MatchResult result
+    ) {
 
-        if (lead == null || vehicle == null) return;
+        if (lead == null
+                || vehicle == null
+                || result == null) {
+            return;
+        }
 
-        boolean exists = opportunityRepository
-                .existsByLeadIdAndVehicleId(lead.getId(), vehicle.getId());
+        boolean exists =
+                opportunityRepository.existsByLeadIdAndVehicleId(
+                        lead.getId(),
+                        vehicle.getId()
+                );
 
-        if (exists) return;
+        if (exists) {
+            return;
+        }
 
-        System.out.println("🚗 MATCH FOUND");
+        System.out.println(
+                "🚗 OPPORTUNITY | score="
+                        + result.score()
+                        + " | lead="
+                        + lead.getPhone()
+                        + " | vehicle="
+                        + vehicle.getModel()
+        );
 
-        eventBus.publish(new OpportunityCreatedEvent(
-                lead.getId(),
-                vehicle.getId(),
-                lead.getPhone(),
-                vehicle.getModel(),
-                vehicle.getPrice()
-        ));
+        System.out.println(
+                "📋 Reason: "
+                        + result.reason()
+        );
+
+        eventBus.publish(
+                new OpportunityCreatedEvent(
+                        lead.getId(),
+                        vehicle.getId(),
+                        lead.getPhone(),
+                        vehicle.getModel(),
+                        vehicle.getPrice(),
+                        result.score(),
+                        result.reason()
+                )
+        );
     }
 }

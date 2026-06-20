@@ -1,19 +1,10 @@
 package br.com.alturionx.lead_recall_ai_backend.model;
 
-import java.time.LocalDateTime;
-
 import br.com.alturionx.lead_recall_ai_backend.enums.OpportunityStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_opportunities")
@@ -24,16 +15,30 @@ public class Opportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Lead lead;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Vehicle vehicle;
 
     @Enumerated(EnumType.STRING)
     private OpportunityStatus status;
 
-    private Integer score; // 🔥 importante para ranking
+    /**
+     * Score comercial final da oportunidade.
+     */
+    private Integer score;
+
+    /**
+     * Score produzido pelo matcher.
+     */
+    private Integer matchScore;
+
+    /**
+     * Motivo do match.
+     */
+    @Column(length = 500)
+    private String matchReason;
 
     private LocalDateTime createdAt;
 
@@ -41,13 +46,44 @@ public class Opportunity {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.status = OpportunityStatus.NEW;
-        this.score = 0;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        this.createdAt = now;
+        this.updatedAt = now;
+
+        if (this.status == null) {
+            this.status = OpportunityStatus.NEW;
+        }
+
+        if (this.score == null) {
+            this.score = 0;
+        }
+
+        if (this.matchScore == null) {
+            this.matchScore = 0;
+        }
+
+        if (this.matchReason == null) {
+            this.matchReason = "";
+        }
+
+        if (this.matchReason.length() > 500) {
+            this.matchReason =
+                    this.matchReason.substring(0, 500);
+        }
     }
 
     @PreUpdate
     public void preUpdate() {
+
         this.updatedAt = LocalDateTime.now();
+
+        if (this.matchReason != null
+                && this.matchReason.length() > 500) {
+
+            this.matchReason =
+                    this.matchReason.substring(0, 500);
+        }
     }
 }

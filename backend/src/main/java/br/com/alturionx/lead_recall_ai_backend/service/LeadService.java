@@ -1,5 +1,7 @@
 package br.com.alturionx.lead_recall_ai_backend.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -39,7 +41,7 @@ public class LeadService {
             return;
         }
 
-        // Intent
+        // INTENT
         if (insight.intent() != null
                 && !insight.intent().isBlank()
                 && !"UNKNOWN".equalsIgnoreCase(insight.intent())) {
@@ -47,34 +49,59 @@ public class LeadService {
             lead.setIntent(insight.intent().trim());
         }
 
-        // Veículo
+        // VEHICLE
         if (insight.vehicle() != null
                 && !insight.vehicle().isBlank()) {
 
-            lead.setVehicleInterest(
-                    insight.vehicle().trim()
-            );
+            lead.setVehicleInterest(insight.vehicle().trim());
         }
 
-        // Orçamento
+        // BRAND (NOVO)
+        if (insight.brand() != null
+                && !insight.brand().isBlank()) {
+
+            lead.setBrand(insight.brand().trim());
+        }
+
+        // MODEL (NOVO)
+        if (insight.model() != null
+                && !insight.model().isBlank()) {
+
+            lead.setModel(insight.model().trim());
+        }
+
+        // VERSION (NOVO)
+        if (insight.version() != null
+                && !insight.version().isBlank()) {
+
+            lead.setVersion(insight.version().trim());
+        }
+
+        // FUEL TYPE (NOVO)
+        if (insight.fuelType() != null) {
+            lead.setFuelType(insight.fuelType());
+        }
+
+        // TRANSMISSION (NOVO)
+        if (insight.transmission() != null) {
+            lead.setTransmission(insight.transmission());
+        }
+
+        // BUDGET
         if (insight.budget() != null
                 && insight.budget() > 0) {
 
             lead.setBudget(insight.budget());
         }
 
-        // Confiança
+        // CONFIDENCE
         if (insight.confidence() != null) {
 
             double confidence = insight.confidence();
 
-            // Compatibilidade com código legado
             lead.setConfidence(confidence);
-
-            // Última confiança observada
             lead.setCurrentConfidence(confidence);
 
-            // Maior confiança histórica
             if (lead.getMaxConfidence() == null
                     || confidence > lead.getMaxConfidence()) {
 
@@ -84,7 +111,7 @@ public class LeadService {
     }
 
     /**
-     * Score baseado no estado acumulado do lead.
+     * Score comercial permanente.
      */
     public void calculateScore(Lead lead) {
 
@@ -94,18 +121,15 @@ public class LeadService {
 
         int score = 0;
 
-        // intenção de compra
         if ("BUY_CAR".equalsIgnoreCase(lead.getIntent())) {
             score += 40;
         }
 
-        // veículo definido
         if (lead.getVehicleInterest() != null
                 && !lead.getVehicleInterest().isBlank()) {
             score += 20;
         }
 
-        // orçamento definido
         if (lead.getBudget() != null) {
 
             if (lead.getBudget() >= 100000) {
@@ -117,7 +141,6 @@ public class LeadService {
             }
         }
 
-        // usa a MAIOR confiança já observada
         if (lead.getMaxConfidence() != null) {
             score += (int) (lead.getMaxConfidence() * 20);
         }
@@ -126,9 +149,33 @@ public class LeadService {
 
         lead.setScore(score);
 
-        // Heat Score inicialmente igual ao score.
-        // Futuramente podemos adicionar recência,
-        // engajamento, reativações e oportunidades.
-        lead.setHeatScore(score);
+        calculateHeatScore(lead);
+    }
+
+    /**
+     * Temperatura comercial atual.
+     */
+    private void calculateHeatScore(Lead lead) {
+
+        int heatScore = lead.getScore() != null
+                ? lead.getScore()
+                : 0;
+
+        if (lead.getLastInteractionAt() != null) {
+
+            long days = ChronoUnit.DAYS.between(
+                    lead.getLastInteractionAt(),
+                    LocalDateTime.now());
+
+            if (days <= 1) {
+                heatScore += 10;
+            } else if (days > 30) {
+                heatScore -= 20;
+            }
+        }
+
+        heatScore = Math.max(0, Math.min(heatScore, 100));
+
+        lead.setHeatScore(heatScore);
     }
 }

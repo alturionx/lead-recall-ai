@@ -1,18 +1,11 @@
 package br.com.alturionx.lead_recall_ai_backend.model;
 
+import br.com.alturionx.lead_recall_ai_backend.enums.VehicleStatus;
+import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import br.com.alturionx.lead_recall_ai_backend.enums.VehicleStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.Data;
 
 @Entity
 @Table(name = "tb_vehicles")
@@ -23,26 +16,76 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Toyota, Honda, Chevrolet...
+     */
     private String brand;
 
+    /**
+     * Corolla, Civic, Hilux...
+     */
     private String model;
 
+    /**
+     * XEi, Altis, GLi, Touring...
+     */
+    private String version;
+
+    /**
+     * 2023, 2024...
+     */
     private Integer year;
 
+    /**
+     * Flex, Gasolina, Diesel...
+     */
+    private String fuelType;
+
+    /**
+     * Manual, Automático, CVT...
+     */
+    private String transmission;
+
+    /**
+     * Valor do veículo
+     */
     private BigDecimal price;
 
-    private String version; // 🔥 ajuda MUITO no matching (ex: XEi, GLI)
-
-    private String fuelType; // opcional (flex, gasolina, etc)
+    /**
+     * Score interno do estoque.
+     * Futuramente:
+     * - carro parado há muito tempo
+     * - promoção
+     * - prioridade da loja
+     */
+    private Integer stockScore = 50;
 
     @Enumerated(EnumType.STRING)
     private VehicleStatus status;
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.status = VehicleStatus.AVAILABLE;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        this.createdAt = now;
+        this.updatedAt = now;
+
+        if (this.status == null) {
+            this.status = VehicleStatus.AVAILABLE;
+        }
+
+        if (this.stockScore == null) {
+            this.stockScore = 50;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

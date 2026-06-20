@@ -27,12 +27,26 @@ public class Lead {
     private Integer score = 0;
 
     /**
-     * Interesse principal identificado
+     * Campo legado.
+     * Mantido para compatibilidade.
      */
     private String vehicleInterest;
 
     /**
-     * Orçamento informado
+     * Estruturação do interesse.
+     */
+    private String brand;
+
+    private String model;
+
+    private String version;
+
+    private String fuelType;
+
+    private String transmission;
+
+    /**
+     * Orçamento informado.
      */
     private Integer budget;
 
@@ -43,12 +57,11 @@ public class Lead {
 
     /**
      * Compatibilidade com versões antigas.
-     * Vamos remover futuramente.
      */
     private Double confidence;
 
     /**
-     * Confiança da última análise da IA.
+     * Confiança da última análise.
      */
     private Double currentConfidence;
 
@@ -63,8 +76,7 @@ public class Lead {
     private Integer heatScore = 0;
 
     /**
-     * Última interação recebida do lead.
-     * Usado para priorização comercial.
+     * Última interação recebida.
      */
     private LocalDateTime lastInteractionAt;
 
@@ -87,6 +99,14 @@ public class Lead {
 
         if (heatScore == null) {
             heatScore = 0;
+        }
+
+        if (currentConfidence == null) {
+            currentConfidence = 0.0;
+        }
+
+        if (maxConfidence == null) {
+            maxConfidence = 0.0;
         }
     }
 
