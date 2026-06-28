@@ -20,7 +20,7 @@ public class OpenAiService {
 
     // ⚠️ ideal mover para env var depois
     private static final String API_KEY =
-            "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";
+            "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";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;

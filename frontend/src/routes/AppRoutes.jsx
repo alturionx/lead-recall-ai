@@ -21,12 +21,12 @@ export default function AppRoutes() {
 
                 {/* 🔁 ROOT REDIRECT INTELIGENTE */}
                 <Route
-                    path="/"
-                    element={
+                    path="/" element={<Dashboard/>}
+ /*                    element={
                         isLogged
                             ? <Navigate to="/admin/dashboard" replace />
                             : <Navigate to="/admin/login" replace />
-                    }
+                    } */
                 />
 
                 {/* 🔐 LOGIN (fora do guard) */}

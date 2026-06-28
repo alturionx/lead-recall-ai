@@ -17,7 +17,8 @@ public class MessageController {
 
     public record IncomingMessageRequest(
             String phone,
-            String content) {
+            String content,
+            String name) {
     }
 
     @PostMapping
@@ -27,6 +28,7 @@ public class MessageController {
                 new MessageEvent(
                         request.phone(),
                         request.content(),
-                        "whatsapp"));
+                        "whatsapp",
+                        request.name()));
     }
 }

@@ -1,6 +1,7 @@
 
 import QRCode from "qrcode"
 import { makeWASocket, useMultiFileAuthState, fetchLatestWaWebVersion, DisconnectReason } from "baileys";
+import { postMessage } from "./api/api.js";
 
 async function loadESMModule() {
     try {
@@ -44,13 +45,14 @@ async function loadESMModule() {
                     if (remoteJid?.endsWith("@g.us")) continue;
 
                     const payload = {
-                        msg,
-                        remoteJid,
-                        remoteJidAlt,
-                        pushName
+                        "content": msg,
+                        /* remoteJid */
+                        "phone": remoteJidAlt,
+                        "name": pushName
                     };
 
-                    console.log(payload);
+                    postMessage(payload);
+
                 }
             } else {
             }

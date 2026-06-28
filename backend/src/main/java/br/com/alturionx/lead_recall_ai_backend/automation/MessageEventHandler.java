@@ -33,7 +33,8 @@ public class MessageEventHandler {
         // 1. persistência + criação do lead + mensagem
         messageService.processIncomingMessage(
                 event.phone(),
-                event.message()
+                event.message(),
+                event.name()
         );
 
         // 2. dispara pipeline IA com proteção

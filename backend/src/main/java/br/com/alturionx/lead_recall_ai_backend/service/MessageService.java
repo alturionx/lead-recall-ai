@@ -29,7 +29,7 @@ public class MessageService {
      * - Atualizar última interação
      * - Salvar Message vinculada ao Lead
      */
-    public Message processIncomingMessage(String phone, String content) {
+    public Message processIncomingMessage(String phone, String content, String name) {
 
         if (phone == null || phone.isBlank()) {
             throw new IllegalArgumentException("Phone não pode ser vazio");
@@ -41,6 +41,7 @@ public class MessageService {
 
         // Atualiza atividade recente
         lead.setLastInteractionAt(now);
+        lead.setName(name);
         leadRepository.save(lead);
 
         Message message = new Message();
