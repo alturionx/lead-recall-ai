@@ -30,7 +30,7 @@ import { useState, useEffect } from "react";
 import getLeads from "./functions/getLeads";
 
 export default function Dashboard() {
-    const [hotLeads, setHotLeads] = useState([])
+/*     const [hotLeads, setHotLeads] = useState([])
 
     useEffect(() => {
         async function loadLeads() {
@@ -43,14 +43,14 @@ export default function Dashboard() {
         }
 
         loadLeads();
-    }, []);
+    }, []); */
 
-    /*     const hotLeads = [
-            { name: "João Santos", interest: "Duster", score: 87, last: "10 min atrás" },
-            { name: "Maria Oliveira", interest: "Corolla", score: 82, last: "5 min atrás" },
-            { name: "Pedro Almeida", interest: "HB20", score: 79, last: "30 min atrás" },
-            { name: "Carlos Lima", interest: "T-Cross", score: 76, last: "2h atrás" },
-        ]; */
+    const hotLeads = [
+        { name: "João Santos", interest: "Duster", score: 87, last: "10 min atrás" },
+        { name: "Maria Oliveira", interest: "Corolla", score: 82, last: "5 min atrás" },
+        { name: "Pedro Almeida", interest: "HB20", score: 79, last: "30 min atrás" },
+        { name: "Carlos Lima", interest: "T-Cross", score: 76, last: "2h atrás" },
+    ];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#030712] via-[#07101D] to-[#020617] text-white">
@@ -143,7 +143,7 @@ export default function Dashboard() {
                                 {hotLeads.map((lead) => (
                                     <tr key={lead.id} className="border-t border-white/5">
                                         <td className="py-3">{lead.name}</td>
-                                        <td>{lead.vehicle_interest}</td>
+                                        <td>{lead.interest}</td>
                                         <td className="text-center">
 
                                             <span
@@ -161,7 +161,7 @@ export default function Dashboard() {
                                             </span>
 
                                         </td>
-                                        <td className="text-center text-orange-400">{lead.last_interaction_at}</td>
+                                        <td className="text-center text-orange-400">{lead.last}</td>
                                     </tr>
                                 ))}
                             </tbody>

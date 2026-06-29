@@ -21,7 +21,7 @@ export default function AppRoutes() {
 
                 {/* 🔁 ROOT REDIRECT INTELIGENTE */}
                 <Route
-                    path="/" element={<Dashboard/>}
+                    path="/" element={<Navigate to="/admin/dashboard" replace />}
  /*                    element={
                         isLogged
                             ? <Navigate to="/admin/dashboard" replace />
